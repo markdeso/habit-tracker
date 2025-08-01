@@ -1357,15 +1357,23 @@
         }
 
         function changeSugarDay(direction) {
-            const currentDate = new Date(currentSugarDate);
+            // Parse current date using local time constructor to avoid timezone issues
+            const [year, month, day] = currentSugarDate.split('-').map(Number);
+            const currentDate = new Date(year, month - 1, day); // Local time constructor
             currentDate.setDate(currentDate.getDate() + direction);
             
-            // Keep within current month
-            const monthStart = new Date(currentMonth + '-01');
-            const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+            // Keep within current month using local time constructors
+            const [currentYear, currentMonthNum] = currentMonth.split('-').map(Number);
+            const monthStart = new Date(currentYear, currentMonthNum - 1, 1);
+            const monthEnd = new Date(currentYear, currentMonthNum, 0); // Last day of month
             
             if (currentDate >= monthStart && currentDate <= monthEnd) {
-                currentSugarDate = currentDate.toISOString().split('T')[0];
+                // Format back to YYYY-MM-DD using local date components
+                const newYear = currentDate.getFullYear();
+                const newMonth = currentDate.getMonth() + 1;
+                const newDay = currentDate.getDate();
+                currentSugarDate = `${newYear}-${String(newMonth).padStart(2, '0')}-${String(newDay).padStart(2, '0')}`;
+                
                 renderBloodSugarInputs();
                 renderBloodSugarStats();
             }
