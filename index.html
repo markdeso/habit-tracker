@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Habit Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 1.5rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 0.75rem;
+            background: #e5e7eb;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: #d1d5db;
+        }
+        
+        .month-display {
+            font-size: 1.125rem;
+            font-weight: 600;
+            padding: 0 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3730a3;
+        }
+        
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #047857;
+        }
+        
+        /* Blood Sugar Section */
+        .sugar-section {
+            background: #fef7ed;
+            border: 2px solid #fed7aa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sugar-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        
+        .sugar-day-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sugar-date-display {
+            font-weight: 600;
+            color: #92400e;
+            font-size: 1rem;
+        }
+        
+        .sugar-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sugar-input-group {
+            text-align: center;
+        }
+        
+        .sugar-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sugar-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #fed7aa;
+            border-radius: 0.375rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .sugar-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        
+        .sugar-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            background: #fff7ed;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #fed7aa;
+        }
+        
+        .sugar-stat {
+            text-align: center;
+        }
+        
+        .sugar-stat-label {
+            font-size: 0.75rem;
+            color: #92400e;
+            font-weight: 500;
+        }
+        
+        .sugar-stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #b45309;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+        }
+        
+        .habit-name {
+            text-align: left;
+            font-weight: 500;
+            width: 220px;
+            min-width: 220px;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 1;
+        }
+        
+        th.habit-name {
+            background: #f9fafb;
+            z-index: 2;
+        }
+        
+        .habit-details {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .day-header {
+            min-width: 35px;
+            font-size: 0.75rem;
+        }
+        
+        .day-abbr {
+            font-size: 0.625rem;
+            color: #6b7280;
+        }
+        
+        .checkbox-btn {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin: 0 auto;
+        }
+        
+        .checkbox-btn.checked {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .checkbox-btn:hover {
+            border-color: #10b981;
+        }
+        
+        .number-input {
+            width: 3rem;
+            height: 2rem;
+            text-align: center;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+        
+        .number-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .progress-bar {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .progress-high {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .progress-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .progress-low {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .total-row {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .percentage-row {
+            background: #e5e7eb;
+            font-style: italic;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .stat-card.blue {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        
+        .stat-card.green {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        
+        .stat-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 28rem;
+            width: 100%;
+            margin: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-secondary {
+            color: #6b7280;
+            background: transparent;
+        }
+        
+        .btn-secondary:hover {
+            color: #374151;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .habit-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .reorder-btn {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .reorder-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .reorder-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reorder-btn:disabled:hover {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+        .delete-btn {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #fee2e2;
+        }
+
+        .edit-btn {
+            background: #f0f9ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .edit-btn:hover {
+            background: #dbeafe;
+        }
+
+        .metrics-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .metric-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .metric-checkbox input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .metrics-display {
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .metric-line {
+            display: block;
+            color: #6b7280;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .trend-up {
+            color: #059669;
+        }
+
+        .trend-down {
+            color: #dc2626;
+        }
+
+        .trend-stable {
+            color: #6b7280;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .drag-over {
+            background-color: #e0f2fe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <h1 class="title">Enhanced Habit Tracker</h1>
+            </div>
+            
+            <div class="header-right">
+                <div class="month-nav">
+                    <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+                    <span class="month-display" id="monthDisplay"></span>
+                    <button class="nav-btn" onclick="changeMonth(1)">→</button>
+                    <button class="nav-btn" onclick="resetToCurrentMonth()" title="Go to current month">📅</button>
+                </div>
+                
+                <button class="btn btn-primary" onclick="showAddHabitModal()">
+                    + Add Habit
+                </button>
+                
+                <button class="btn btn-success" onclick="exportData()">
+                    ↓ Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Alert for localStorage issues -->
+        <div id="storageAlert" class="alert alert-info hidden">
+            ⚠️ Data storage is limited when opening from file system. Your data will be saved for this session but may not persist between browser restarts.
+        </div>
+
+        <!-- Blood Sugar Section -->
+        <div class="sugar-section">
+            <div class="sugar-title">📊 Blood Sugar Tracking</div>
+            
+            <div class="sugar-day-nav">
+                <button class="nav-btn" onclick="changeSugarDay(-1)">←</button>
+                <span class="sugar-date-display" id="sugarDateDisplay"></span>
+                <button class="nav-btn" onclick="changeSugarDay(1)">→</button>
+            </div>
+            
+            <div class="sugar-inputs">
+                <div class="sugar-input-group">
+                    <label class="sugar-label">Morning</label>
+                    <input type="number" class="sugar-input" id="sugarMorning" 
+                           placeholder="mg/dL" min="0" max="999" 
+                           onchange="updateBloodSugar('morning', this.value)">
+                </div>
+                <div class="sugar-input-group">
+                    <label class="sugar-label">Afternoon</label>
+                    <input type="number" class="sugar-input" id="sugarAfternoon" 
+                           placeholder="mg/dL" min="0" max="999" 
+                           onchange="updateBloodSugar('afternoon', this.value)">
+                </div>
+                <div class="sugar-input-group">
+                    <label class="sugar-label">Evening</label>
+                    <input type="number" class="sugar-input" id="sugarEvening" 
+                           placeholder="mg/dL" min="0" max="999" 
+                           onchange="updateBloodSugar('evening', this.value)">
+                </div>
+                <div class="sugar-input-group">
+                    <label class="sugar-label">Night</label>
+                    <input type="number" class="sugar-input" id="sugarNight" 
+                           placeholder="mg/dL" min="0" max="999" 
+                           onchange="updateBloodSugar('night', this.value)">
+                </div>
+            </div>
+            
+            <div class="sugar-stats" id="sugarStats">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Overall Stats -->
+        <div class="stats-grid" id="overallStats">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+
+        <!-- Habits Table -->
+        <div class="table-container">
+            <table id="habitsTable">
+                <!-- Table will be populated by JavaScript -->
+            </table>
+        </div>
+
+        <!-- Add Habit Modal -->
+        <div class="modal hidden" id="addHabitModal">
+            <div class="modal-content">
+                <h3 class="modal-title">Add New Habit</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Habit Name</label>
+                    <input type="text" class="form-input" id="habitName" placeholder="Enter habit name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Frequency</label>
+                    <select class="form-select" id="habitFrequency" onchange="toggleTargetGroup()">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="habitType" onchange="toggleMetricsVisibility()">
+                        <option value="boolean">Yes/No (Checkmark)</option>
+                        <option value="number">Number Value</option>
+                    </select>
+                </div>
+                
+                <div class="form-group hidden" id="targetGroup">
+                    <label class="form-label">Target per Week</label>
+                    <input type="number" class="form-input" id="habitTarget" min="1" value="1">
+                </div>
+                
+                <div class="form-group hidden" id="monthlyTargetGroup">
+                    <label class="form-label">Monthly Target (optional)</label>
+                    <input type="number" class="form-input" id="habitMonthlyTarget" min="1" placeholder="For target progress tracking">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Metrics to Display</label>
+                    <div class="metrics-group">
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricAverage" value="average">
+                            <label for="metricAverage">Average</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricChange" value="change">
+                            <label for="metricChange">Change (Start→End)</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricTotal" value="total">
+                            <label for="metricTotal">Total/Sum</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricStreak" value="streak">
+                            <label for="metricStreak">Longest Streak</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricBest" value="best">
+                            <label for="metricBest">Best Day</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricTrend" value="trend">
+                            <label for="metricTrend">Trend</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricConsistency" value="consistency">
+                            <label for="metricConsistency">Consistency (1-10)</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="metricTarget" value="target">
+                            <label for="metricTarget">Target Progress %</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideAddHabitModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="addHabit()">Add Habit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Habit Modal -->
+        <div class="modal hidden" id="editHabitModal">
+            <div class="modal-content">
+                <h3 class="modal-title">Edit Habit</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Habit Name</label>
+                    <input type="text" class="form-input" id="editHabitName" placeholder="Enter habit name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Monthly Target (optional)</label>
+                    <input type="number" class="form-input" id="editHabitMonthlyTarget" min="1" placeholder="For target progress tracking">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Metrics to Display</label>
+                    <div class="metrics-group">
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricAverage" value="average">
+                            <label for="editMetricAverage">Average</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricChange" value="change">
+                            <label for="editMetricChange">Change (Start→End)</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricTotal" value="total">
+                            <label for="editMetricTotal">Total/Sum</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricStreak" value="streak">
+                            <label for="editMetricStreak">Longest Streak</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricBest" value="best">
+                            <label for="editMetricBest">Best Day</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricTrend" value="trend">
+                            <label for="editMetricTrend">Trend</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricConsistency" value="consistency">
+                            <label for="editMetricConsistency">Consistency (1-10)</label>
+                        </div>
+                        <div class="metric-checkbox">
+                            <input type="checkbox" id="editMetricTarget" value="target">
+                            <label for="editMetricTarget">Target Progress %</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideEditHabitModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveHabitEdit()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state with fallback storage
+        let habits = [
+            { id: 1, name: 'Make my bed', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 2, name: 'Prayer and meditation', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 3, name: 'Bible in a Year', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 4, name: 'Morning meds', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 5, name: 'Practice Guitar', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 6, name: 'Supernatural Workout', frequency: 'weekly', target: 4, type: 'boolean', metrics: ['streak'] },
+            { id: 7, name: 'Evening meds', frequency: 'daily', target: 1, type: 'boolean', metrics: ['streak'] },
+            { id: 8, name: 'Weight', frequency: 'daily', target: 1, type: 'number', metrics: ['change', 'trend'] }
+        ];
+
+        let currentMonth = '';
+        let currentSugarDate = '';
+        let entries = {};
+        let bloodSugar = {};
+        let storageAvailable = false;
+
+        // Initialize storage
+        function initStorage() {
+            // Force fresh date calculation with explicit logging
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // getMonth() is 0-based
+            const day = now.getDate();
+            
+            currentMonth = `${year}-${String(month).padStart(2, '0')}`;
+            currentSugarDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                storageAvailable = true;
+                
+                // Load existing data
+                const savedEntries = localStorage.getItem('habitEntries');
+                const savedBloodSugar = localStorage.getItem('bloodSugar');
+                
+                if (savedEntries) entries = JSON.parse(savedEntries);
+                if (savedBloodSugar) bloodSugar = JSON.parse(savedBloodSugar);
+                
+            } catch (e) {
+                storageAvailable = false;
+                document.getElementById('storageAlert').classList.remove('hidden');
+            }
+        }
+
+        function saveToStorage(key, data) {
+            if (storageAvailable) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                } catch (e) {
+                    console.warn('Storage failed:', e);
+                }
+            }
+        }
+
+        function getCurrentMonth() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function getCurrentDate() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function resetToCurrentMonth() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            
+            currentMonth = `${year}-${String(month).padStart(2, '0')}`;
+            currentSugarDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            render();
+        }
+
+        function generateDaysInMonth(yearMonth) {
+            const [year, month] = yearMonth.split('-').map(Number);
+            const daysInMonth = new Date(year, month, 0).getDate(); // Last day of month
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            return Array.from({ length: daysInMonth }, (_, i) => {
+                const date = new Date(year, month - 1, i + 1); // Use local time constructor
+                return {
+                    date: i + 1,
+                    dayOfWeek: date.getDay(),
+                    dayName: dayNames[date.getDay()],
+                    fullDate: `${year}-${String(month).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`
+                };
+            });
+        }
+
+        // Habit functions
+        // Habit management functions
+        function moveHabitUp(habitId) {
+            const index = habits.findIndex(h => h.id === habitId);
+            if (index > 0) {
+                [habits[index], habits[index - 1]] = [habits[index - 1], habits[index]];
+                saveHabits();
+                render();
+            }
+        }
+
+        function moveHabitDown(habitId) {
+            const index = habits.findIndex(h => h.id === habitId);
+            if (index < habits.length - 1) {
+                [habits[index], habits[index + 1]] = [habits[index + 1], habits[index]];
+                saveHabits();
+                render();
+            }
+        }
+
+        function deleteHabit(habitId) {
+            if (confirm('Are you sure you want to delete this habit? All associated data will be lost.')) {
+                habits = habits.filter(h => h.id !== habitId);
+                
+                // Remove all entries for this habit
+                Object.keys(entries).forEach(key => {
+                    if (key.startsWith(`${habitId}-`)) {
+                        delete entries[key];
+                    }
+                });
+                
+                saveHabits();
+                saveToStorage('habitEntries', entries);
+                render();
+            }
+        }
+
+        function saveHabits() {
+            if (storageAvailable) {
+                try {
+                    localStorage.setItem('habits', JSON.stringify(habits));
+                } catch (e) {
+                    console.warn('Failed to save habits:', e);
+                }
+            }
+        }
+
+        function loadHabits() {
+            if (storageAvailable) {
+                try {
+                    const savedHabits = localStorage.getItem('habits');
+                    if (savedHabits) {
+                        const loadedHabits = JSON.parse(savedHabits);
+                        // Migrate old habits to include metrics array
+                        habits = loadedHabits.map(habit => ({
+                            ...habit,
+                            metrics: habit.metrics || (habit.type === 'boolean' ? ['streak'] : ['average'])
+                        }));
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('Failed to load habits:', e);
+                }
+            }
+            
+            // If no saved habits, ensure default habits have metrics
+            habits = habits.map(habit => ({
+                ...habit,
+                metrics: habit.metrics || (habit.type === 'boolean' ? ['streak'] : ['average'])
+            }));
+        }
+
+        // Drag and drop functions
+        function handleDragStart(e, habitId) {
+            e.dataTransfer.setData('text/plain', habitId);
+            e.target.closest('tr').classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.closest('tr').classList.remove('dragging');
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const row = e.target.closest('tr');
+            if (row && !row.classList.contains('total-row') && !row.classList.contains('percentage-row')) {
+                row.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            const row = e.target.closest('tr');
+            if (row) {
+                row.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e, targetHabitId) {
+            e.preventDefault();
+            const draggedHabitId = parseInt(e.dataTransfer.getData('text/plain'));
+            const targetRow = e.target.closest('tr');
+            
+            if (targetRow) {
+                targetRow.classList.remove('drag-over');
+            }
+            
+            if (draggedHabitId !== targetHabitId) {
+                const draggedIndex = habits.findIndex(h => h.id === draggedHabitId);
+                const targetIndex = habits.findIndex(h => h.id === targetHabitId);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    const draggedHabit = habits[draggedIndex];
+                    habits.splice(draggedIndex, 1);
+                    habits.splice(targetIndex, 0, draggedHabit);
+                    
+                    saveHabits();
+                    render();
+                }
+            }
+        }
+
+        function updateEntry(habitId, date, value = null) {
+            const key = `${habitId}-${date}`;
+            const habit = habits.find(h => h.id === habitId);
+            
+            if (habit.type === 'boolean') {
+                entries[key] = !entries[key];
+            } else {
+                entries[key] = parseFloat(value) || 0;
+            }
+            
+            saveToStorage('habitEntries', entries);
+            renderTable();
+            renderOverallStats();
+        }
+
+        function calculateStats(habitId) {
+            const habitEntries = Object.entries(entries).filter(([key]) => 
+                key.startsWith(`${habitId}-${currentMonth}`)
+            );
+            
+            const habit = habits.find(h => h.id === habitId);
+            if (!habit) return { completed: 0, total: 0, percentage: 0, metrics: {} };
+            
+            const daysInMonth = generateDaysInMonth(currentMonth);
+            let completed = 0;
+            let total = 0;
+            
+            // Basic completion stats
+            if (habit.frequency === 'daily') {
+                total = daysInMonth.length;
+                habitEntries.forEach(([, value]) => {
+                    if (habit.type === 'boolean') {
+                        if (value) completed++;
+                    } else {
+                        if (value > 0) completed++;
+                    }
+                });
+            } else if (habit.frequency === 'weekly') {
+                const weeks = Math.ceil(daysInMonth.length / 7);
+                total = weeks * habit.target;
+                completed = habitEntries.filter(([, value]) => value).length;
+            }
+            
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            // Calculate selected metrics
+            const metrics = {};
+            const selectedMetrics = habit.metrics || [];
+            
+            if (selectedMetrics.includes('average')) {
+                metrics.average = calculateAverage(habitEntries, habit.type);
+            }
+            
+            if (selectedMetrics.includes('change')) {
+                metrics.change = calculateChange(habitEntries, daysInMonth);
+            }
+            
+            if (selectedMetrics.includes('total')) {
+                metrics.total = calculateTotal(habitEntries, habit.type);
+            }
+            
+            if (selectedMetrics.includes('streak')) {
+                metrics.streak = calculateStreak(habitId, daysInMonth, habit.type);
+            }
+            
+            if (selectedMetrics.includes('best')) {
+                metrics.best = calculateBest(habitEntries, habit.type);
+            }
+            
+            if (selectedMetrics.includes('trend')) {
+                metrics.trend = calculateTrend(habitEntries, daysInMonth, habit.type);
+            }
+            
+            if (selectedMetrics.includes('consistency')) {
+                metrics.consistency = calculateConsistency(habitEntries, habit.type);
+            }
+            
+            if (selectedMetrics.includes('target') && habit.monthlyTarget) {
+                metrics.target = calculateTargetProgress(habitEntries, habit.type, habit.monthlyTarget);
+            }
+            
+            return { completed, total, percentage, metrics };
+        }
+
+        function calculateAverage(habitEntries, type) {
+            if (type === 'boolean') return 0;
+            
+            let sum = 0;
+            let count = 0;
+            
+            habitEntries.forEach(([, value]) => {
+                if (value > 0) {
+                    sum += value;
+                    count++;
+                }
+            });
+            
+            return count > 0 ? sum / count : 0;
+        }
+
+        function calculateChange(habitEntries, daysInMonth) {
+            const sortedEntries = habitEntries
+                .filter(([, value]) => value > 0)
+                .sort(([keyA], [keyB]) => {
+                    const dateA = keyA.split('-').slice(-3).join('-');
+                    const dateB = keyB.split('-').slice(-3).join('-');
+                    return dateA.localeCompare(dateB);
+                });
+            
+            if (sortedEntries.length < 2) return 0;
+            
+            const first = sortedEntries[0][1];
+            const last = sortedEntries[sortedEntries.length - 1][1];
+            
+            return last - first;
+        }
+
+        function calculateTotal(habitEntries, type) {
+            if (type === 'boolean') {
+                return habitEntries.filter(([, value]) => value).length;
+            }
+            
+            return habitEntries.reduce((sum, [, value]) => sum + (value || 0), 0);
+        }
+
+        function calculateStreak(habitId, daysInMonth, type) {
+            let maxStreak = 0;
+            let currentStreak = 0;
+            
+            daysInMonth.forEach(day => {
+                const key = `${habitId}-${day.fullDate}`;
+                const value = entries[key];
+                
+                const hasValue = type === 'boolean' ? value : (value > 0);
+                
+                if (hasValue) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 0;
+                }
+            });
+            
+            return maxStreak;
+        }
+
+        function calculateBest(habitEntries, type) {
+            if (type === 'boolean') return 0;
+            
+            return habitEntries.reduce((max, [, value]) => Math.max(max, value || 0), 0);
+        }
+
+        function calculateTrend(habitEntries, daysInMonth, type) {
+            const validEntries = habitEntries
+                .filter(([, value]) => type === 'boolean' ? value : (value > 0))
+                .sort(([keyA], [keyB]) => {
+                    const dateA = keyA.split('-').slice(-3).join('-');
+                    const dateB = keyB.split('-').slice(-3).join('-');
+                    return dateA.localeCompare(dateB);
+                });
+            
+            if (validEntries.length < 4) return 'stable';
+            
+            const midPoint = Math.floor(validEntries.length / 2);
+            const firstHalf = validEntries.slice(0, midPoint);
+            const secondHalf = validEntries.slice(midPoint);
+            
+            const firstAvg = firstHalf.reduce((sum, [, value]) => sum + (type === 'boolean' ? 1 : value), 0) / firstHalf.length;
+            const secondAvg = secondHalf.reduce((sum, [, value]) => sum + (type === 'boolean' ? 1 : value), 0) / secondHalf.length;
+            
+            const difference = secondAvg - firstAvg;
+            const threshold = type === 'boolean' ? 0.1 : (firstAvg * 0.1);
+            
+            if (difference > threshold) return 'up';
+            if (difference < -threshold) return 'down';
+            return 'stable';
+        }
+
+        function calculateConsistency(habitEntries, type) {
+            if (type === 'boolean') return 10; // Always consistent for boolean
+            
+            const values = habitEntries
+                .filter(([, value]) => value > 0)
+                .map(([, value]) => value);
+            
+            if (values.length < 3) return 10;
+            
+            const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+            const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+            const stdDev = Math.sqrt(variance);
+            const cv = mean > 0 ? (stdDev / mean) : 0;
+            
+            // Convert coefficient of variation to 1-10 scale (lower CV = higher consistency)
+            return Math.max(1, Math.min(10, Math.round(10 - (cv * 10))));
+        }
+
+        function calculateTargetProgress(habitEntries, type, target) {
+            const total = calculateTotal(habitEntries, type);
+            return target > 0 ? Math.round((total / target) * 100) : 0;
+        }
+
+        function calculateDailyTotals() {
+            const daysInMonth = generateDaysInMonth(currentMonth);
+            const dailyTotals = {};
+            
+            daysInMonth.forEach(day => {
+                let completed = 0;
+                let total = habits.length;
+                
+                habits.forEach(habit => {
+                    const key = `${habit.id}-${day.fullDate}`;
+                    const value = entries[key];
+                    
+                    if (habit.type === 'boolean' && value) {
+                        completed++;
+                    } else if (habit.type === 'number' && value > 0) {
+                        completed++;
+                    }
+                });
+                
+                dailyTotals[day.fullDate] = {
+                    completed,
+                    total,
+                    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+                };
+            });
+            
+            return dailyTotals;
+        }
+
+        // Blood sugar functions
+        function updateBloodSugar(time, value) {
+            const key = `${time}-${currentSugarDate}`;
+            bloodSugar[key] = parseFloat(value) || 0;
+            saveToStorage('bloodSugar', bloodSugar);
+            renderBloodSugarStats();
+        }
+
+        function calculateBloodSugarStats() {
+            const daysInMonth = generateDaysInMonth(currentMonth);
+            const times = ['morning', 'afternoon', 'evening', 'night'];
+            const stats = {};
+            
+            // Calculate cumulative averages for each time period
+            times.forEach(time => {
+                let sum = 0;
+                let count = 0;
+                
+                daysInMonth.forEach(day => {
+                    const key = `${time}-${day.fullDate}`;
+                    const value = bloodSugar[key];
+                    if (value && value > 0) {
+                        sum += value;
+                        count++;
+                    }
+                });
+                
+                stats[time] = {
+                    cumulative: count > 0 ? sum / count : 0,
+                    count: count
+                };
+            });
+            
+            // Calculate daily averages (average of all 4 readings for each day)
+            const dailyAverages = [];
+            daysInMonth.forEach(day => {
+                const dayValues = times.map(time => {
+                    const key = `${time}-${day.fullDate}`;
+                    return bloodSugar[key] || 0;
+                }).filter(v => v > 0);
+                
+                if (dayValues.length > 0) {
+                    dailyAverages.push(dayValues.reduce((a, b) => a + b, 0) / dayValues.length);
+                }
+            });
+            
+            // Overall monthly average
+            stats.overall = {
+                daily: dailyAverages.length > 0 ? dailyAverages.reduce((a, b) => a + b, 0) / dailyAverages.length : 0,
+                daysWithReadings: dailyAverages.length
+            };
+            
+            // Today's average
+            const todayValues = times.map(time => {
+                const key = `${time}-${currentSugarDate}`;
+                return bloodSugar[key] || 0;
+            }).filter(v => v > 0);
+            
+            stats.today = {
+                average: todayValues.length > 0 ? todayValues.reduce((a, b) => a + b, 0) / todayValues.length : 0,
+                readings: todayValues.length
+            };
+            
+            return stats;
+        }
+
+        function changeSugarDay(direction) {
+            const currentDate = new Date(currentSugarDate);
+            currentDate.setDate(currentDate.getDate() + direction);
+            
+            // Keep within current month
+            const monthStart = new Date(currentMonth + '-01');
+            const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+            
+            if (currentDate >= monthStart && currentDate <= monthEnd) {
+                currentSugarDate = currentDate.toISOString().split('T')[0];
+                renderBloodSugarInputs();
+                renderBloodSugarStats();
+            }
+        }
+
+        // Modal functions
+        function showAddHabitModal() {
+            document.getElementById('addHabitModal').classList.remove('hidden');
+        }
+
+        function hideAddHabitModal() {
+            document.getElementById('addHabitModal').classList.add('hidden');
+        }
+
+        function showEditHabitModal(habitId) {
+            const habit = habits.find(h => h.id === habitId);
+            if (!habit) return;
+            
+            document.getElementById('editHabitName').value = habit.name;
+            document.getElementById('editHabitMonthlyTarget').value = habit.monthlyTarget || '';
+            
+            // Clear all checkboxes first
+            document.querySelectorAll('#editHabitModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            // Check the selected metrics
+            (habit.metrics || []).forEach(metric => {
+                const checkbox = document.getElementById(`editMetric${metric.charAt(0).toUpperCase() + metric.slice(1)}`);
+                if (checkbox) checkbox.checked = true;
+            });
+            
+            document.getElementById('editHabitModal').dataset.editingId = habitId;
+            document.getElementById('editHabitModal').classList.remove('hidden');
+        }
+
+        function hideEditHabitModal() {
+            document.getElementById('editHabitModal').classList.add('hidden');
+        }
+
+        function toggleTargetGroup() {
+            const frequency = document.getElementById('habitFrequency').value;
+            const targetGroup = document.getElementById('targetGroup');
+            
+            if (frequency === 'weekly') {
+                targetGroup.classList.remove('hidden');
+            } else {
+                targetGroup.classList.add('hidden');
+            }
+        }
+
+        function toggleMetricsVisibility() {
+            const type = document.getElementById('habitType').value;
+            const monthlyTargetGroup = document.getElementById('monthlyTargetGroup');
+            
+            if (type === 'number') {
+                monthlyTargetGroup.classList.remove('hidden');
+            } else {
+                monthlyTargetGroup.classList.add('hidden');
+            }
+        }
+
+        function getSelectedMetrics(prefix = 'metric') {
+            const metrics = [];
+            const checkboxes = document.querySelectorAll(`input[id^="${prefix}"]:checked`);
+            checkboxes.forEach(cb => metrics.push(cb.value));
+            return metrics;
+        }
+
+        function addHabit() {
+            const name = document.getElementById('habitName').value.trim();
+            const frequency = document.getElementById('habitFrequency').value;
+            const type = document.getElementById('habitType').value;
+            const target = parseInt(document.getElementById('habitTarget').value) || 1;
+            const monthlyTarget = parseInt(document.getElementById('habitMonthlyTarget').value) || null;
+            const metrics = getSelectedMetrics();
+            
+            if (!name) {
+                alert('Please enter a habit name');
+                return;
+            }
+            
+            const id = Math.max(...habits.map(h => h.id), 0) + 1;
+            habits.push({ id, name, frequency, target, type, metrics, monthlyTarget });
+            
+            // Clear form
+            document.getElementById('habitName').value = '';
+            document.getElementById('habitFrequency').value = 'daily';
+            document.getElementById('habitType').value = 'boolean';
+            document.getElementById('habitTarget').value = '1';
+            document.getElementById('habitMonthlyTarget').value = '';
+            document.getElementById('targetGroup').classList.add('hidden');
+            document.getElementById('monthlyTargetGroup').classList.add('hidden');
+            document.querySelectorAll('#addHabitModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            saveHabits();
+            hideAddHabitModal();
+            render();
+        }
+
+        function saveHabitEdit() {
+            const habitId = parseInt(document.getElementById('editHabitModal').dataset.editingId);
+            const habit = habits.find(h => h.id === habitId);
+            
+            if (!habit) return;
+            
+            const name = document.getElementById('editHabitName').value.trim();
+            const monthlyTarget = parseInt(document.getElementById('editHabitMonthlyTarget').value) || null;
+            const metrics = getSelectedMetrics('editMetric');
+            
+            if (!name) {
+                alert('Please enter a habit name');
+                return;
+            }
+            
+            habit.name = name;
+            habit.monthlyTarget = monthlyTarget;
+            habit.metrics = metrics;
+            
+            saveHabits();
+            hideEditHabitModal();
+            render();
+        }
+
+        function changeMonth(direction) {
+            const [year, month] = currentMonth.split('-').map(Number);
+            let newYear = year;
+            let newMonth = month + direction;
+            
+            if (newMonth > 12) {
+                newMonth = 1;
+                newYear++;
+            } else if (newMonth < 1) {
+                newMonth = 12;
+                newYear--;
+            }
+            
+            currentMonth = `${newYear}-${String(newMonth).padStart(2, '0')}`;
+            
+            // Set blood sugar date more intelligently
+            const today = new Date();
+            const newMonthDate = new Date(newYear, newMonth - 1, 1); // First day of new month
+            const isCurrentMonth = (today.getFullYear() === newYear && today.getMonth() === newMonth - 1);
+            
+            if (isCurrentMonth) {
+                // If it's the current month, default to today
+                currentSugarDate = today.toISOString().split('T')[0];
+            } else {
+                // Otherwise, default to the 1st of the month
+                currentSugarDate = `${newYear}-${String(newMonth).padStart(2, '0')}-01`;
+            }
+            
+            render();
+        }
+
+        function exportData() {
+            const data = {
+                habits,
+                entries,
+                bloodSugar,
+                currentMonth,
+                exportDate: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `habit-tracker-${currentMonth}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Rendering functions
+        function renderBloodSugarInputs() {
+            // Fix timezone issue - use local time constructor instead of string parsing
+            const [year, month, day] = currentSugarDate.split('-').map(Number);
+            const dateObj = new Date(year, month - 1, day); // Use local time constructor
+            const dateDisplay = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('sugarDateDisplay').textContent = dateDisplay;
+            
+            const times = ['morning', 'afternoon', 'evening', 'night'];
+            times.forEach(time => {
+                const key = `${time}-${currentSugarDate}`;
+                const input = document.getElementById(`sugar${time.charAt(0).toUpperCase() + time.slice(1)}`);
+                if (input) {
+                    input.value = bloodSugar[key] || '';
+                }
+            });
+        }
+
+        function renderBloodSugarStats() {
+            const stats = calculateBloodSugarStats();
+            const container = document.getElementById('sugarStats');
+            
+            container.innerHTML = `
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Morning Avg</div>
+                    <div class="sugar-stat-value">${stats.morning.cumulative.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.morning.count} readings</div>
+                </div>
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Afternoon Avg</div>
+                    <div class="sugar-stat-value">${stats.afternoon.cumulative.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.afternoon.count} readings</div>
+                </div>
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Evening Avg</div>
+                    <div class="sugar-stat-value">${stats.evening.cumulative.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.evening.count} readings</div>
+                </div>
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Night Avg</div>
+                    <div class="sugar-stat-value">${stats.night.cumulative.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.night.count} readings</div>
+                </div>
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Today's Avg</div>
+                    <div class="sugar-stat-value">${stats.today.average.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.today.readings} readings today</div>
+                </div>
+                <div class="sugar-stat">
+                    <div class="sugar-stat-label">Monthly Avg</div>
+                    <div class="sugar-stat-value">${stats.overall.daily.toFixed(1)}</div>
+                    <div class="sugar-stat-label">${stats.overall.daysWithReadings} days</div>
+                </div>
+            `;
+        }
+
+        function renderOverallStats() {
+            const container = document.getElementById('overallStats');
+            const overallProgress = habits.length > 0 ? 
+                Math.round(habits.reduce((sum, habit) => sum + calculateStats(habit.id).percentage, 0) / habits.length) : 0;
+            
+            const sortedHabits = habits
+                .map(habit => ({ ...habit, stats: calculateStats(habit.id) }))
+                .sort((a, b) => b.stats.percentage - a.stats.percentage);
+            
+            const bestHabits = sortedHabits.slice(0, 3);
+            const needsAttention = sortedHabits.slice(-2).reverse();
+            
+            container.innerHTML = `
+                <div class="stat-card blue">
+                    <div class="stat-title" style="color: #1e40af;">Overall Progress</div>
+                    <div class="stat-value" style="color: #1e40af;">${overallProgress}%</div>
+                    <div class="stat-label" style="color: #1e40af;">Average completion rate</div>
+                </div>
+                
+                <div class="stat-card green">
+                    <div class="stat-title" style="color: #166534;">Top Performers</div>
+                    ${bestHabits.map(habit => 
+                        `<div style="color: #166534; font-size: 0.875rem;">✓ ${habit.name}: ${habit.stats.percentage}%</div>`
+                    ).join('')}
+                </div>
+            `;
+        }
+
+        function formatMetricsDisplay(metrics, habit) {
+            if (!metrics || Object.keys(metrics).length === 0) return '—';
+            
+            const lines = [];
+            
+            if (metrics.average > 0) {
+                lines.push(`<span class="metric-line">Avg: <span class="metric-value">${metrics.average.toFixed(1)}</span></span>`);
+            }
+            
+            if (metrics.change !== undefined) {
+                const changeClass = metrics.change > 0 ? 'trend-up' : metrics.change < 0 ? 'trend-down' : 'trend-stable';
+                const changeSymbol = metrics.change > 0 ? '+' : '';
+                lines.push(`<span class="metric-line">Δ: <span class="metric-value ${changeClass}">${changeSymbol}${metrics.change.toFixed(1)}</span></span>`);
+            }
+            
+            if (metrics.total > 0) {
+                lines.push(`<span class="metric-line">Total: <span class="metric-value">${habit.type === 'number' ? metrics.total.toFixed(1) : metrics.total}</span></span>`);
+            }
+            
+            if (metrics.streak > 0) {
+                lines.push(`<span class="metric-line">Streak: <span class="metric-value">${metrics.streak} days</span></span>`);
+            }
+            
+            if (metrics.best > 0) {
+                lines.push(`<span class="metric-line">Best: <span class="metric-value">${metrics.best.toFixed(1)}</span></span>`);
+            }
+            
+            if (metrics.trend) {
+                const trendSymbol = metrics.trend === 'up' ? '↗️' : metrics.trend === 'down' ? '↘️' : '→';
+                const trendClass = metrics.trend === 'up' ? 'trend-up' : metrics.trend === 'down' ? 'trend-down' : 'trend-stable';
+                lines.push(`<span class="metric-line">Trend: <span class="metric-value ${trendClass}">${trendSymbol}</span></span>`);
+            }
+            
+            if (metrics.consistency > 0) {
+                lines.push(`<span class="metric-line">Consistency: <span class="metric-value">${metrics.consistency}/10</span></span>`);
+            }
+            
+            if (metrics.target > 0) {
+                const targetClass = metrics.target >= 100 ? 'trend-up' : metrics.target >= 75 ? 'trend-stable' : 'trend-down';
+                lines.push(`<span class="metric-line">Target: <span class="metric-value ${targetClass}">${metrics.target}%</span></span>`);
+            }
+            
+            return lines.join('');
+        }
+
+        function renderTable() {
+            const daysInMonth = generateDaysInMonth(currentMonth);
+            const dailyTotals = calculateDailyTotals();
+            const table = document.getElementById('habitsTable');
+            
+            // Build header
+            let headerHTML = `
+                <thead>
+                    <tr>
+                        <th class="habit-name">Habit</th>
+                        ${daysInMonth.map(day => `
+                            <th class="day-header">
+                                <div class="day-abbr">${day.dayName.slice(0, 2)}</div>
+                                <div>${day.date}</div>
+                            </th>
+                        `).join('')}
+                        <th>Progress</th>
+                        <th>%</th>
+                        <th>Metrics</th>
+                    </tr>
+                </thead>
+            `;
+            
+            // Build body
+            let bodyHTML = '<tbody>';
+            
+            // Habit rows
+            habits.forEach((habit, habitIndex) => {
+                const stats = calculateStats(habit.id);
+                bodyHTML += `
+                    <tr draggable="true" 
+                        ondragstart="handleDragStart(event, ${habit.id})"
+                        ondragend="handleDragEnd(event)"
+                        ondragover="handleDragOver(event)"
+                        ondragenter="handleDragEnter(event)"
+                        ondragleave="handleDragLeave(event)"
+                        ondrop="handleDrop(event, ${habit.id})">
+                        <td class="habit-name">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                                <div style="flex: 1;">
+                                    <div>${habit.name}</div>
+                                    <div class="habit-details">
+                                        ${habit.frequency}${habit.frequency === 'weekly' ? ` (${habit.target}x/week)` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="habit-controls">
+                                <button class="reorder-btn" 
+                                        onclick="moveHabitUp(${habit.id})" 
+                                        title="Move up"
+                                        ${habitIndex === 0 ? 'disabled' : ''}>
+                                    ↑
+                                </button>
+                                <button class="reorder-btn" 
+                                        onclick="moveHabitDown(${habit.id})" 
+                                        title="Move down"
+                                        ${habitIndex === habits.length - 1 ? 'disabled' : ''}>
+                                    ↓
+                                </button>
+                                <button class="reorder-btn edit-btn" 
+                                        onclick="showEditHabitModal(${habit.id})" 
+                                        title="Edit habit">
+                                    ✎
+                                </button>
+                                <button class="reorder-btn delete-btn" 
+                                        onclick="deleteHabit(${habit.id})" 
+                                        title="Delete habit">
+                                    ×
+                                </button>
+                            </div>
+                        </td>
+                        ${daysInMonth.map(day => {
+                            const key = `${habit.id}-${day.fullDate}`;
+                            const value = entries[key];
+                            
+                            if (habit.type === 'boolean') {
+                                return `
+                                    <td>
+                                        <button 
+                                            class="checkbox-btn ${value ? 'checked' : ''}"
+                                            onclick="updateEntry(${habit.id}, '${day.fullDate}')"
+                                        >
+                                            ${value ? '✓' : ''}
+                                        </button>
+                                    </td>
+                                `;
+                            } else {
+                                return `
+                                    <td>
+                                        <input 
+                                            type="number" 
+                                            class="number-input"
+                                            value="${value || ''}"
+                                            placeholder="0"
+                                            step="0.1"
+                                            onchange="updateEntry(${habit.id}, '${day.fullDate}', this.value)"
+                                        >
+                                    </td>
+                                `;
+                            }
+                        }).join('')}
+                        <td style="font-weight: 600;">${stats.completed}/${stats.total}</td>
+                        <td>
+                            <div class="progress-bar ${
+                                stats.percentage >= 80 ? 'progress-high' :
+                                stats.percentage >= 60 ? 'progress-medium' : 'progress-low'
+                            }">
+                                ${stats.percentage}%
+                            </div>
+                        </td>
+                        <td>
+                            <div class="metrics-display">
+                                ${formatMetricsDisplay(stats.metrics, habit)}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            // Daily totals row
+            bodyHTML += `
+                <tr class="total-row">
+                    <td class="habit-name"><strong>Daily Totals</strong></td>
+                    ${daysInMonth.map(day => `
+                        <td><strong>${dailyTotals[day.fullDate].completed}</strong></td>
+                    `).join('')}
+                    <td colspan="3"></td>
+                </tr>
+            `;
+            
+            // Daily percentage row
+            bodyHTML += `
+                <tr class="percentage-row">
+                    <td class="habit-name"><em>Daily %</em></td>
+                    ${daysInMonth.map(day => `
+                        <td><em>${dailyTotals[day.fullDate].percentage}%</em></td>
+                    `).join('')}
+                    <td colspan="3"></td>
+                </tr>
+            `;
+            
+            bodyHTML += '</tbody>';
+            
+            table.innerHTML = headerHTML + bodyHTML;
+        }
+
+        function render() {
+            // Update month display - fix timezone issue
+            const monthDisplay = document.getElementById('monthDisplay');
+            const [year, month] = currentMonth.split('-').map(Number);
+            const date = new Date(year, month - 1, 1); // Use local time constructor
+            const monthText = date.toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            monthDisplay.textContent = monthText;
+            
+            renderBloodSugarInputs();
+            renderBloodSugarStats();
+            renderOverallStats();
+            renderTable();
+        }
+
+        // Initialize app
+        initStorage();
+        loadHabits();
+        render();
+    </script>
+</body>
+</html>
